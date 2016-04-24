@@ -14,4 +14,13 @@ urlpatterns = [
         name='dashboard'
         ),
 
+    url(r'^user/signout/$',
+        views.SignOutView.as_view(),
+        name='signout'
+        ),
+
+    url(r'^send/$',
+        views.SendFeedbackView.as_view(),
+        name='send_feedback'
+        ),
 ]
