@@ -1,3 +1,7 @@
+$(document).ready(function(){
+    signOutGoogleUser();
+});
+
 $.ajaxSetup({
     headers: {
         "X-CSRFToken": $("meta[name='csrf-token']").attr("content"),
@@ -77,3 +81,25 @@ function renderButton() {
     });
 };
 
+function signOutGoogleUser() {
+    $('#user-signout').on('click', function(e){
+        e.preventDefault();
+        $.ajax({
+                type: "GET",
+                url: "/feedback/user/signout/",
+
+                success: function(response) {
+                    if (response === "success") {
+                            location.href = "/"
+                            signOut();
+
+                        }
+
+                },
+
+                error: function(error) {
+                        console.log(error.responseText)
+                },
+        });
+    });
+}

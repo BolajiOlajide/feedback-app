@@ -1,10 +1,14 @@
+import slackweb
 
 from django.views.generic.base import TemplateView, View
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.contrib.auth.models import User
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.contrib.auth import logout
 
-from .models import GoogleUser
+from models import GoogleUser
 
 
 class AuthenticationView(TemplateView):
@@ -66,3 +70,35 @@ class GoogleAuthenticateView(View):
 class UserHomeView(TemplateView):
 
     template_name = 'feedback/home.html'
+
+
+class LoginRequiredMixin(object):
+
+    '''View mixin which requires that the user is authenticated.'''
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(LoginRequiredMixin, self).dispatch(
+            request, *args, **kwargs)
+
+
+class SignOutView(View, LoginRequiredMixin):
+
+    '''Logout User from session.'''
+
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return HttpResponse("success", content_type="text/plain")
+
+
+class SendFeedbackView(TemplateView, LoginRequiredMixin):
+
+    def post(self, request):
+        name = request.POST.get('slack_username', '')
+        message = request.POST.get('slack_message', '')
+        import envvars
+        envvars.load()
+        slack_api = envvars.get('SLACK_API')
+        slack = slackweb.Slack(url=slack_api)
+        slack.notify(text=message, channel=name, username="phantom-bot", icon_emoji=":ghost:")
+        return HttpResponse("success", content_type="text/plain")
