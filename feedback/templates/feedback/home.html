@@ -13,7 +13,7 @@
             <p>IF YOU FIND YOURSELF HERE, THEN YOU HAVE BEEN AUTHENTICATED.</p>
 
         </center>
-        <form id="sendFeedbackForm" method="POST" action="{% url 'send_feedback' %}">
+        <form id="sendFeedbackForm" action="{% url 'send_feedback' %}">
             <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
             Slack username:<br>
             <input type="text" name="slack_username"><br>

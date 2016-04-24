@@ -11,16 +11,23 @@ $.ajaxSetup({
 $.ajaxSetup({ cache: false });
 
 function sendFeedback() {
-    var fd = new FormData();
-    var file_data = $form.find('input[type="file"]')[0].files[0];
-    var other_data = $form.serializeArray();
-
-    $.each(other_data, function(key, input) {
-        fd.append(input.name, input.value);
-    });
-
     $('#sendFeedbackForm').on('submit', function(e){
         e.preventDefault();
+        var $form = $(this);
+        var fd = new FormData();
+        var other_data = $form.serializeArray();
+
+        $.each(other_data, function(key, input) {
+            fd.append(input.name, input.value);
+        });
+
+        var notify = $.notify('<strong>Sending....!</strong>...', {
+                            allow_dismiss: true,
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                        });
         $.ajax({
                 type: "POST",
                 url: $form.attr('action'),
@@ -30,9 +37,14 @@ function sendFeedback() {
 
                 success: function(response) {
                     if (response === "success") {
-                            console.log("TO DO::: Bootstrap notifier")
-
-                        }
+                        var notify = $.notify('<strong>Your message has been sent!</strong>...', {
+                            allow_dismiss: true,
+                            placement: {
+                                from: "top",
+                                align: "center"
+                            },
+                        });
+                    }
 
                 },
 

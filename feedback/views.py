@@ -91,7 +91,7 @@ class SignOutView(View, LoginRequiredMixin):
         return HttpResponse("success", content_type="text/plain")
 
 
-class SendFeedbackView(TemplateView, LoginRequiredMixin):
+class SendFeedbackView(View, LoginRequiredMixin):
 
     def post(self, request):
         name = request.POST.get('slack_username', '')
