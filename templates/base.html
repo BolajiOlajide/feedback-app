@@ -1,0 +1,15 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="google-signin-client_id" content="21865176717-u4dio2k0teg84v27mlrpruvigveeua7i.apps.googleusercontent.com">
+    <title>{% block title %}Feedback App {% endblock %}</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+</head>
+<body>
+    {% block main %}
+    {% endblock %}
+    <script src="{% static 'js/google_user.js' %}"></script>
+</body>
+</html>
