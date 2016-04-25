@@ -1,4 +1,6 @@
 import slackweb
+import requests
+import envvars
 
 from django.views.generic.base import TemplateView, View
 from django.http import HttpResponse, HttpResponseNotAllowed
@@ -9,6 +11,24 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth import logout
 
 from models import GoogleUser
+
+envvars.load()
+
+def get_slack_users():
+    '''Helper function to return all slack users.'''
+
+    slack_token_url = envvars.get('SLACK_TOKEN_URL')
+    resp = requests.get(slack_token_url)
+    return resp.json()['members']
+
+
+def get_slack_user_id(username):
+    '''Helper function to get user id from username '''
+
+    members = get_slack_users()
+    for member in members:
+        if member.get('name') == username:
+            return member.get('id')
 
 
 class AuthenticationView(TemplateView):
@@ -96,9 +116,7 @@ class SendFeedbackView(View, LoginRequiredMixin):
     def post(self, request):
         name = request.POST.get('slack_username', '')
         message = request.POST.get('slack_message', '')
-        import envvars
-        envvars.load()
-        slack_api = envvars.get('SLACK_API')
-        slack = slackweb.Slack(url=slack_api)
+        slack_api_url = envvars.get('SLACK_API_URL')
+        slack = slackweb.Slack(url=slack_api_url)
         slack.notify(text=message, channel=name, username="phantom-bot", icon_emoji=":ghost:")
         return HttpResponse("success", content_type="text/plain")
