@@ -10,12 +10,12 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth import logout
 
-from models import GoogleUser
+from models import GoogleUser, SentFeedback
 
 envvars.load()
 
 def get_slack_users():
-    '''Helper function to return all slack users.'''
+    """Helper function to return all slack users."""
 
     slack_token_url = envvars.get('SLACK_TOKEN_URL')
     resp = requests.get(slack_token_url)
@@ -23,12 +23,13 @@ def get_slack_users():
 
 
 def get_slack_user_id(username):
-    '''Helper function to get user id from username '''
+    """Helper function to get user id from username."""
 
     members = get_slack_users()
     for member in members:
         if member.get('name') == username:
             return member.get('id')
+
 
 
 class AuthenticationView(TemplateView):
@@ -94,7 +95,7 @@ class UserHomeView(TemplateView):
 
 class LoginRequiredMixin(object):
 
-    '''View mixin which requires that the user is authenticated.'''
+    """View mixin which requires that the user is authenticated."""
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -104,7 +105,7 @@ class LoginRequiredMixin(object):
 
 class SignOutView(View, LoginRequiredMixin):
 
-    '''Logout User from session.'''
+    """Logout User from session."""
 
     def get(self, request, *args, **kwargs):
         logout(request)
@@ -118,5 +119,19 @@ class SendFeedbackView(View, LoginRequiredMixin):
         message = request.POST.get('slack_message', '')
         slack_api_url = envvars.get('SLACK_API_URL')
         slack = slackweb.Slack(url=slack_api_url)
-        slack.notify(text=message, channel=name, username="phantom-bot", icon_emoji=":ghost:")
+        response = slack.notify(text=message, channel=name, username="phantom-bot", icon_emoji=":ghost:")
+        if response == 'ok':
+            user_id = request.user.id
+            user = User.objects.get(id=user_id)
+            sent_feedback = SentFeedback(
+                                sender=user,
+                                receiver=name,
+                                message=message,
+                                url_id=''
+                            )
+            sent_feedback.save()
         return HttpResponse("success", content_type="text/plain")
+
+
+class ReplyFeedbackView(View):
+    pass

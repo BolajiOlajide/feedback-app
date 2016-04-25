@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Feedback | Reply{% endblock %}
+
+{% block main %}
+
+    <h1>My Reply View</h1>
+
+    <div id="app">
+        <input id="user-signout" type="submit" value="Sign out">
+        <center>
+            <p>IF YOU FIND YOURSELF HERE, THEN YOU NEED TO REPLY THE MESSAGE.</p>
+
+        </center>
+        <form id="receiveFeedbackForm" action="{% url 'reply_feedback' %}">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            Message:<br>
+            <input type="text" name="slack_message">
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+{% endblock %}
+
