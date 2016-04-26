@@ -61,3 +61,5 @@ target/
 
 # mediafile
 media/
+
+.DS_Store
