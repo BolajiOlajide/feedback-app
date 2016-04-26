@@ -59,10 +59,10 @@ class UserHasher:
             min_length=UserHasher.pkhash_min_length,
             alphabet=UserHasher.alphabet
         )
-        email_hash = hashids.encode(registered_user.email)
+        pk_hash = hashids.encode(registered_user.pk)
 
         # return the combination delimited by UserHasher.delim:
-        return "%s%s%s" % (timestamp_hash, UserHasher.delim, email_hash)
+        return "%s%s%s" % (timestamp_hash, UserHasher.delim, pk_hash)
 
     @staticmethod
     def reverse_hash(hash_str):
@@ -99,11 +99,11 @@ class UserHasher:
                 min_length=UserHasher.pkhash_min_length,
                 alphabet=UserHasher.alphabet
             )
-            account_email = hashids.decode(hashs[1])[0]
+            account_pk = hashids.decode(hashs[1])[0]
 
             # return the account for that pk if it exists:
-            registered_user = User.objects.get(email=account_email)
-            return registered_user.email
+            registered_user = User.objects.get(pk=account_pk)
+            return registered_user
 
         except:
             # return None if it doesn't:
