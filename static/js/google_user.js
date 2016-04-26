@@ -14,6 +14,8 @@ function onSignIn(googleUser) {
     console.log("this is google user", googleUser)
     var profile = googleUser.getBasicProfile();
     var id_token = googleUser.getAuthResponse().id_token;
+    var url = location.href.split('?');
+    var next = url[1]? url[1] : 'next';
 
     $.ajax({
             type: "GET",
@@ -22,7 +24,7 @@ function onSignIn(googleUser) {
                 console.log(response)
                 $.ajax({
                     type: "GET",
-                    url: "/feedback/user/authenticate/",
+                    url: "/feedback/user/authenticate/" + "?" + next,
                     data: response,
 
                     success: function(response) {

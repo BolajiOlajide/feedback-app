@@ -1,34 +1,43 @@
 import slackweb
 import requests
 import envvars
+from hashids import Hashids
 
+from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
-from django.http import HttpResponse, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login
+from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth import logout
+from django.core.context_processors import csrf
+from django.http import Http404
 
-from models import GoogleUser
+from models import GoogleUser, SentFeedback, ReceivedFeedback
+from hashs import UserHasher as Hasher
+hashids = Hashids(min_length=16)
 
 envvars.load()
 
+
 def get_slack_users():
-    '''Helper function to return all slack users.'''
+    """Helper function to return all slack users."""
 
     slack_token_url = envvars.get('SLACK_TOKEN_URL')
     resp = requests.get(slack_token_url)
     return resp.json()['members']
 
 
-def get_slack_user_id(username):
-    '''Helper function to get user id from username '''
+def get_slack_username(email):
+    """Helper function to get user id from username."""
 
     members = get_slack_users()
     for member in members:
-        if member.get('name') == username:
-            return member.get('id')
+        if member.get('profile').get('email') == email:
+            return member.get('name')
+
 
 
 class AuthenticationView(TemplateView):
@@ -39,6 +48,12 @@ class AuthenticationView(TemplateView):
 class GoogleAuthenticateView(View):
 
     def get(self, request, *args, **kwargs):
+
+        next_value, nil = "", False
+        if request.GET['next'] == '':
+            nil = True
+        else:
+            next_value = request.GET['next']
 
         user_id = request.GET['sub']
         try:
@@ -84,7 +99,10 @@ class GoogleAuthenticateView(View):
             google_user.save()
 
             login(request, user)
-            return HttpResponse("success", content_type="text/plain")
+            if next_value == "" and nil == True:
+                return HttpResponse("success", content_type="text/plain")
+            else:
+                return HttpResponseRedirect(next)
 
 
 class UserHomeView(TemplateView):
@@ -94,7 +112,7 @@ class UserHomeView(TemplateView):
 
 class LoginRequiredMixin(object):
 
-    '''View mixin which requires that the user is authenticated.'''
+    """View mixin which requires that the user is authenticated."""
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -104,7 +122,7 @@ class LoginRequiredMixin(object):
 
 class SignOutView(View, LoginRequiredMixin):
 
-    '''Logout User from session.'''
+    """Logout User from session."""
 
     def get(self, request, *args, **kwargs):
         logout(request)
@@ -116,7 +134,99 @@ class SendFeedbackView(View, LoginRequiredMixin):
     def post(self, request):
         name = request.POST.get('slack_username', '')
         message = request.POST.get('slack_message', '')
+        user_id = request.user.id
+        user = User.objects.get(id=user_id)
+        reply_hash = Hasher.gen_hash(user)
+        reply_hash_url = request.build_absolute_uri(
+                reverse(
+                    'reply_feedback',
+                    kwargs={'reply_hash': reply_hash},
+                )
+            )
+
         slack_api_url = envvars.get('SLACK_API_URL')
         slack = slackweb.Slack(url=slack_api_url)
-        slack.notify(text=message, channel=name, username="phantom-bot", icon_emoji=":ghost:")
+        response = slack.notify(text=message + ' reply to ' + reply_hash_url , channel=name, username="phantom-bot", icon_emoji=":ghost:")
+        if response == 'ok':
+            sent_feedback = SentFeedback(
+                                sender=user,
+                                receiver=name,
+                                message=message,
+                            )
+            sent_feedback.save()
+        return HttpResponse("success", content_type="text/plain")
+
+
+class ReplyFeedbackView(TemplateView):
+
+    template_name = 'feedback/reply.html'
+
+    def get(self, request, *args, **kwargs):
+        """Handles GET requests to 'reply_message' named route.
+
+        Returns: A redirect to the login page.
+        Raises: A Http404 error.
+        """
+        args = {}
+
+        # get the activation_hash captured in url
+        reply_hash = kwargs['reply_hash']
+
+        # reverse the hash to get the user (auto-authentication)
+        user = Hasher.reverse_hash(reply_hash)
+
+        if user is not None:
+            reply_email = user.email
+            sender_id = user
+            slack_reply_user = get_slack_username(reply_email)
+            sender_feedback = SentFeedback.objects.filter(sender=sender_id)[0]
+
+            user_id = request.user.id
+            user = User.objects.get(id=user_id)
+
+            r_feedback = ReceivedFeedback(
+                receiver=user,
+                slack_username=sender_feedback.receiver,
+                message=sender_feedback.message
+            )
+
+            r_feedback.save()
+
+            slack_user = slack_reply_user.encode('base64', 'strict')
+            args['reply'] = slack_user
+            args.update(csrf(request))
+
+            return render(request, self.template_name, args)
+
+        else:
+            raise Http404("/User does not exist")
+
+
+class RespondToFeedbackView(TemplateView):
+
+    def post(self, request, *args, **kwargs):
+        name = request.POST.get('slack_username', '')
+        name = name.decode('base64', 'strict')
+        message = request.POST.get('slack_message', '')
+
+        user_id = request.user.id
+        user = User.objects.get(id=user_id)
+        reply_hash = Hasher.gen_hash(user)
+        reply_hash_url = request.build_absolute_uri(
+                            reverse(
+                                'reply_feedback',
+                                kwargs={'reply_hash': reply_hash},
+                            )
+                        )
+
+        slack_api_url = envvars.get('SLACK_API_URL')
+        slack = slackweb.Slack(url=slack_api_url)
+        response = slack.notify(text=message + ' reply to ' + reply_hash_url, channel='@' + name, username="phantom-bot", icon_emoji=":ghost:")
+        if response == 'ok':
+            sent_feedback = SentFeedback(
+                                sender=user,
+                                receiver=name,
+                                message=message,
+                            )
+            sent_feedback.save()
         return HttpResponse("success", content_type="text/plain")

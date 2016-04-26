@@ -23,4 +23,14 @@ urlpatterns = [
         views.SendFeedbackView.as_view(),
         name='send_feedback'
         ),
+
+    url(r'^respond/$',
+        views.RespondToFeedbackView.as_view(),
+        name='respond'
+        ),
+
+    url(r'^reply/(?P<reply_hash>([a-z0-9A-Z])+)$',
+        views.ReplyFeedbackView.as_view(),
+        name='reply_feedback'
+        ),
 ]

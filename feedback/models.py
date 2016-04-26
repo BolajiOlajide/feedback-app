@@ -35,7 +35,21 @@ class SentFeedback(BaseInfo):
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
     receiver = models.CharField(max_length=100)
     message = models.TextField()
-    url_id = models.TextField()
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __unicode__(self):
+        return "Sender {} and receiver {}" .format(self.sender.username,
+                                                   self.receiver)
+
+
+class ReceivedFeedback(BaseInfo):
+    """Recieved feedback data model defined."""
+
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE)
+    slack_username = models.CharField(max_length=100)
+    message = models.TextField()
 
     class Meta:
         ordering = ('-created_at',)
