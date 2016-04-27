@@ -5,6 +5,7 @@ from hashids import Hashids
 
 from django.shortcuts import render
 from django.views.generic.base import TemplateView, View
+from django.views.generic import ListView
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login
@@ -230,3 +231,18 @@ class RespondToFeedbackView(TemplateView):
                             )
             sent_feedback.save()
         return HttpResponse("success", content_type="text/plain")
+
+
+class SendFeedbackListView(ListView):
+    template_name = 'feedback/sentfeedback.html'
+    context_object_name = 'sent_list'
+
+    def get_queryset(self):
+        return SentFeedback.objects.filter(sender=self.request.user)
+
+class ReceivedFeedbackListView(ListView):
+    template_name = 'feedback/receivedfeedback.html'
+    context_object_name = 'received_list'
+
+    def get_queryset(self):
+        return ReceivedFeedback.objects.filter(receiver=self.request.user)

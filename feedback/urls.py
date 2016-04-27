@@ -29,6 +29,16 @@ urlpatterns = [
         name='respond'
         ),
 
+    url(r'^sent/$',
+        views.SendFeedbackListView.as_view(),
+        name='sent_feedback'
+        ),
+
+    url(r'^received/$',
+        views.ReceivedFeedbackListView.as_view(),
+        name='received_feedback'
+        ),
+
     url(r'^reply/(?P<reply_hash>([a-z0-9A-Z])+)$',
         views.ReplyFeedbackView.as_view(),
         name='reply_feedback'

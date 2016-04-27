@@ -55,5 +55,4 @@ class ReceivedFeedback(BaseInfo):
         ordering = ('-created_at',)
 
     def __unicode__(self):
-        return "Sender {} and receiver {}" .format(self.sender.username,
-                                                   self.receiver)
+        return "Receiver {}" .format(self.receiver.username)

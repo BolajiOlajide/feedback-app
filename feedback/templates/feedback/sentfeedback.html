@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Feedback | Sent{% endblock %}
+
+{% block main %}
+
+    <h1>My Sent View</h1>
+
+    <div id="app">
+        <center>
+            <p>VIEW SENT FEEDBACK</p>
+
+        </center>
+        {% if received_list %}
+            <ul>
+            {% for feedback in sent_list %}
+
+                <li>{{ sender.username }}</li>
+
+            {% endfor %}
+            </ul>
+        {% else %}
+
+            <p>You have no sent feedback </p>
+
+        {% endif %}
+
+    </div>
+{% endblock %}
+

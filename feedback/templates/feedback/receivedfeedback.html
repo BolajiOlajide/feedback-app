@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Feedback | Reply{% endblock %}
+
+{% block main %}
+
+    <h1>My Reply View</h1>
+
+    <div id="app">
+
+        <center>
+            <p>VIEW RECEIVED FEEDBACK</p>
+
+        </center>
+
+
+        {% if received_list %}
+        <ul>
+            {% for feedback in received_list %}
+
+                <li>{{ feedback.slack_username }}</li>
+                <li>{{ feedback.message }}</li>
+
+            {% endfor %}
+        </ul>
+
+         {% else %}
+
+         <p>You have no received feedback </p>
+
+         {% endif %}
+
+    </div>
+{% endblock %}
+
