@@ -7,8 +7,9 @@ envvars==0.3.0
 gunicorn==19.4.5
 hashids==1.1.0
 psycopg2==2.6.1
+pycrypto==2.6.1
 requests==2.9.1
+simple-crypt==4.1.7
 slackweb==1.0.5
 SQLAlchemy==1.0.12
 static3==0.6.1
-wheel==0.24.0

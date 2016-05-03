@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ block.super }} - My Conversations{% endblock %}
+
+{% block main %}
+
+    <h1>Phantom Messenger</h1>
+    <ul>
+        <li><a href="{% url 'messenger:conversations' %}">All Conservations</a></li>
+        <li><a href="{% url 'messenger:conversations' %}?init=1">Started By Me</a></li>
+        <li><a href="{% url 'messenger:conversation_start' %}">New Conversation</a></li>
+    </ul>
+    <form method="GET" action="{% url 'messenger:conversations' %}">
+        <input type="search" name="q"></input>
+    </form>
+    <div>
+        <h3>Messages:</h3>
+        <ul>
+            {% for conversation in conversations %}
+                <li><a href="{% url 'messenger:conversation' pk=conversation.pk %}">
+                    <h4>{{ conversation.subject }}</h4>
+                    <p>{{ conversation.latest_message.content }}</p>
+                    <span>{{ conversation.latest_message.date_created|naturaltime }}</span>
+                </a></li>
+            {% empty %}
+               <p>No conversation yet. Click <a href="{% url 'messenger:conversation_start' %}"> here</a> to start one.</p>
+            {% endfor %}
+        </ul>
+    </div>
+
+{% endblock %}
+

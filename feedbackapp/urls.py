@@ -21,5 +21,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.AuthenticationView.as_view(), name='homepage'),
     url(r'^feedback/', include('feedback.urls')),
+    url(r'^messenger/', include('messenger.urls', namespace='messenger')),
 
 ]

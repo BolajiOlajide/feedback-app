@@ -29,7 +29,7 @@ function onSignIn(googleUser) {
 
                     success: function(response) {
                         if (response == "success") {
-                            location.href= "/feedback/user/home/";
+                            location.href= "/messenger/conversations/";
                         }
                     },
 
@@ -92,7 +92,8 @@ function signOutGoogleUser() {
 
                 success: function(response) {
                     if (response === "success") {
-                            location.href = "/"
+                            console.log("signed out");
+                            window.location.href = "http://www.google.com";
                             signOut();
 
                         }

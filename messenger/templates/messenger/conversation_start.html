@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ block.super }} - Start New Conversations{% endblock %}
+
+{% block main %}
+
+    <h1>Phantom Messenger</h1>
+    <ul>
+        <li><a href="{% url 'messenger:conversations' %}">All Conservations</a></li>
+        <li><a href="{% url 'messenger:conversations' %}?init=1">Started By Me</a></li>
+        <li><a href="{% url 'messenger:conversation_start' %}">New Conversation</a></li>
+    </ul>
+    <form method="GET" action="{% url 'messenger:conversations' %}">
+        <input type="search" name="q"></input>
+    </form>
+    <div>
+        <h3>Start New Conversation:</h3>
+        <form method="POST" action="{% url 'messenger:conversation_start' %}">
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+{% endblock %}
+

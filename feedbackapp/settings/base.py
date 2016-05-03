@@ -25,7 +25,7 @@ envvars.load()
 SECRET_KEY = envvars.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = envvars.get('DEBUG')
 
 ALLOWED_HOSTS = []
 
@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'feedback.apps.FeedbackConfig'
+    'django.contrib.humanize',
+    'feedback.apps.FeedbackConfig',
+    'messenger.apps.MessengerConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -129,5 +131,14 @@ STATICFILES_FINDERS = (
 LOGIN_URL = '/'
 
 LOGIN_REQUIRED_URLS = (
+    r'/messenger/conversations/(.*)/slack_join/$',
     r'/feedback/reply/(.*)$',
 )
+
+# Pagination
+
+CONVERSATION_LIST_PAGE = 15
+MESSAGE_LIST_PAGE = 15
+
+# ICON
+APP_ICON_URL = 'http://res.cloudinary.com/awiliuzo/image/upload/v1462150142/logo_hxk2ws.png'

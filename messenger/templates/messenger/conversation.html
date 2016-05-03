@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ block.super }} - Start New Conversations{% endblock %}
+
+{% block main %}
+
+    <h1>Phantom Messenger</h1>
+    <div>
+        <h3>{{ conversation.subject }}</h3>
+    </div>
+    <ul>
+        {% for message in conversation.messages.all %}
+            <li>
+                <p>{{ message.content }}</p>
+                <span>{{ message.date_created|naturaltime }}</span>
+            </li>
+        {% empty %}
+            <p>No messages in this conversation yet. Start by typing your message in the box below.</p>
+        {% endfor %}
+    </ul>
+    <div>
+        <form method="POST" action="{% url 'messenger:conversation' pk=conversation.pk %}">
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+{% endblock %}
+
