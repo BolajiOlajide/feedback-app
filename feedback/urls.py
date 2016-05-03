@@ -9,10 +9,10 @@ urlpatterns = [
         name='verify'
         ),
 
-    url(r'^user/home/$',
-        views.UserHomeView.as_view(),
-        name='dashboard'
-        ),
+    # url(r'^user/home/$',
+    #     views.UserHomeView.as_view(),
+    #     name='dashboard'
+    #     ),
 
     url(r'^user/signout/$',
         views.SignOutView.as_view(),

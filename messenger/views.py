@@ -199,7 +199,7 @@ class ConversationView(View, LoginRequiredMixin):
                 message.save()
                 # send the message notification to the other member(s)
                 # of the conversation:
-                slack_names = [get_slack_name(member)
+                slack_names = ['@{}'.format(get_slack_name(member))
                                for member in other_members]
                 for slack_name in slack_names:
                     join_link = get_slack_join_link(
@@ -244,6 +244,7 @@ class ConversationSlackJoinView(View, LoginRequiredMixin):
         join_hash = kwargs.get('join_hash')
         conversation_id = get_slack_join_conversation(request, join_hash)
         conversation = get_object_or_404(Conversation, id=conversation_id)
+        conversation.members.add(request.user)
 
         # redirect to the conersation view:
         return redirect(reverse(

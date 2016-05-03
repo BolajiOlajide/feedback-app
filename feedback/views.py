@@ -9,7 +9,7 @@ from django.views.generic import ListView
 from django.http import HttpResponse, HttpResponseNotAllowed, HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth import logout
@@ -45,43 +45,40 @@ class AuthenticationView(TemplateView):
 
     template_name = 'feedback/authentication.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return HttpResponseRedirect(
+                reverse_lazy('messenger:conversations'))
+        return super(AuthenticationView, self).dispatch(request, *args, **kwargs)
+
 
 class GoogleAuthenticateView(View):
 
     def get(self, request, *args, **kwargs):
 
-        next_value, nil = "", False
-        if request.GET['next'] == '':
-            nil = True
-        else:
-            next_value = request.GET['next']
+        next_value = request.GET.get('next')
+        user_id = request.GET.get('sub')
 
-        user_id = request.GET['sub']
         try:
             google_user = GoogleUser.objects.get(google_id=user_id)
             user = User.objects.get(id=google_user.app_user.id)
             user.backend = 'django.contrib.auth.backends.ModelBackend'
             login(request, user)
 
-            return HttpResponse("success", content_type="text/plain")
-
         except GoogleUser.DoesNotExist:
 
             if 'hd' not in request.GET:
                 return HttpResponseNotAllowed("Invalid parameters given")
-
             if (
                 request.GET['hd'] != 'andela.com' and
                 request.GET['iss'] != "accounts.google.com" and
                 request.GET['email_verified'] != "true" and
                 request.GET['aud'] != "21865176717-u4dio2k0teg84v27mlrpruvigveeua7i.apps.googleusercontent"
             ):
-
                 return HttpResponseNotAllowed("Invalid parameters given")
 
             # proceed to create the user
             username = request.GET['name']
-
             # Create the user
             # need to find alternate data for these fields
             user = User(
@@ -91,19 +88,16 @@ class GoogleAuthenticateView(View):
                 last_name=request.GET['family_name']
             )
             user.save()
-
             google_user = GoogleUser(google_id=user_id,
                                      app_user=user,)
-
             user.backend = 'django.contrib.auth.backends.ModelBackend'
-
             google_user.save()
-
             login(request, user)
-            if next_value == "" and nil == True:
-                return HttpResponse("success", content_type="text/plain")
-            else:
-                return HttpResponseRedirect(next)
+
+        if next_value:
+            return HttpResponse("success_next", content_type="text/plain")
+        else:
+            return HttpResponse("success_home", content_type="text/plain")
 
 
 class UserHomeView(TemplateView):
