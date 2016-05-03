@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 {% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/authentication.css' %}">
+{% endblock extra_css %}
 {% block title %}Feedback | Welcome{% endblock %}
+{% block body_id %}auth-body{% endblock body_id %}
 {% block main %}
-    <div id="my-signin2" class="signin"></div>
+    <div class="center-phantom">
+        <div class="phantom-logo-big"><img src="{% static 'img/hero-logo.png' %}"></div>
+        <div class="phantom-text"><h2>Send and receive Slack messages securely and anonymously</h2></div>
+        <div id="my-signin2" class="signin"></div>
+    </div>
 {% endblock %}
