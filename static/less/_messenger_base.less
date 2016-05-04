@@ -1,0 +1,46 @@
+@import "_vars";
+
+
+.ui.menu {
+    box-shadow: none;
+    border: none;
+    border-bottom: 1px solid fadeout(@phantom-grey, 85%);
+}
+.ui.menu.navbar{
+    box-shadow: 0 1px 2px 0 fadeout(@phantom-grey, 85%);
+    border: none;
+    background-color: fadeout(white, 15%);
+
+    .container > .item:first-child{
+        border: none !important;
+        padding-left: 0;
+        .logo {
+            height: 30px;
+            width: auto;
+        }
+    }
+    .item::before{
+        background: transparent;
+    }
+    .nav-menu-link{
+        cursor: pointer;
+        &.active {
+            background-color: transparent;
+            border-bottom: 2px solid @phantom-green;
+        }
+        &:hover {
+            background-color: @phantom-ash;
+        }
+    }
+}
+
+.page-content{
+    padding-top: 58px;
+}
+
+.secondary-menu-bar{
+    background-color: fadeout(white, 15%);
+    .ui.divider, .secondary.menu{
+        margin: 0;
+    }
+}

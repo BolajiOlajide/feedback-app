@@ -1,33 +1,50 @@
-{% extends "base.html" %}
+{% extends "messenger/base.html" %}
 {% load static %}
 {% load humanize %}
 
 {% block title %}{{ block.super }} - My Conversations{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/conversations.css' %}">
+{% endblock extra_css %}
 
-{% block main %}
+{% block page_content %}
 
-    <h1>Phantom Messenger</h1>
-    <ul>
-        <li><a href="{% url 'messenger:conversations' %}">All Conservations</a></li>
-        <li><a href="{% url 'messenger:conversations' %}?init=1">Started By Me</a></li>
-        <li><a href="{% url 'messenger:conversation_start' %}">New Conversation</a></li>
-    </ul>
-    <form method="GET" action="{% url 'messenger:conversations' %}">
-        <input type="search" name="q"></input>
-    </form>
-    <div>
-        <h3>Messages:</h3>
-        <ul>
-            {% for conversation in conversations %}
-                <li><a href="{% url 'messenger:conversation' pk=conversation.pk %}">
-                    <h4>{{ conversation.subject }}</h4>
-                    <p>{{ conversation.latest_message.content }}</p>
-                    <span>{{ conversation.latest_message.date_created|naturaltime }}</span>
-                </a></li>
-            {% empty %}
-               <p>No conversation yet. Click <a href="{% url 'messenger:conversation_start' %}"> here</a> to start one.</p>
-            {% endfor %}
-        </ul>
+    <div class="ui grid">
+
+        <div class="sixteen wide column secondary-menu-bar">
+            <div class="ui secondary menu">
+                <a class="active item">All Conservations</a>
+                <a class="item">Started By Me</a>
+                <a class="item"><i class="plus icon"></i> New Conversation</a>
+                <div class="right menu">
+                    <div class="item">
+                        <form method="GET" action="{% url 'messenger:conversations' %}">
+                            <div class="ui icon input">
+                                <input placeholder="Search..." type="search" name="q">
+                                <i class="search icon"></i>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="ui divider"></div>
+        </div>
+
+        <div class="sixteen wide column option-bar">
+            <ul>
+                {% for conversation in conversations %}
+                    <li><a href="{% url 'messenger:conversation' pk=conversation.pk %}">
+                        <h4>{{ conversation.subject }}</h4>
+                        <p>{{ conversation.latest_message.content }}</p>
+                        <span>{{ conversation.latest_message.date_created|naturaltime }}</span>
+                    </a></li>
+                {% empty %}
+                   <p>No conversation yet. Click <a href="{% url 'messenger:conversation_start' %}"> here</a> to start one.</p>
+                {% endfor %}
+            </ul>
+        </div>
+
+        </div>
     </div>
 
 {% endblock %}
