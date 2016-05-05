@@ -32,7 +32,7 @@
                 <div class="ui secondary menu">
                     <a class="active item">All Conservations</a>
                     <a class="item">Started By Me</a>
-                    <a class="item"><i class="plus icon"></i> New Conversation</a>
+                    <a class="item rgwehtu" href="{% url 'messenger:conversation_start' %}"><i class="plus icon"></i> New Conversation</a>
                     <div class="right menu">
                         <div class="item">
                             <form method="GET" action="{% url 'messenger:conversations' %}">
@@ -55,6 +55,7 @@
         </div>
     </div>
 
+    <!--
     <div class="ui container footer">
         <div class="ui grid">
             <div class="sixteen wide column">
@@ -62,5 +63,6 @@
             </div>
         </div>
     </div>
+    -->
 
 {% endblock %}

@@ -1,26 +1,34 @@
-{% extends "base.html" %}
+{% extends "messenger/base.html" %}
 {% load static %}
+{% load widget_tweaks %}
 {% load humanize %}
 
 {% block title %}{{ block.super }} - Start New Conversations{% endblock %}
 
-{% block page_content %}
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/conversation_start.css' %}">
+{% endblock extra_css %}
 
-    <h1>Phantom Messenger</h1>
-    <ul>
-        <li><a href="{% url 'messenger:conversations' %}">All Conservations</a></li>
-        <li><a href="{% url 'messenger:conversations' %}?init=1">Started By Me</a></li>
-        <li><a href="{% url 'messenger:conversation_start' %}">New Conversation</a></li>
-    </ul>
-    <form method="GET" action="{% url 'messenger:conversations' %}">
-        <input type="search" name="q"></input>
-    </form>
-    <div>
-        <h3>Start New Conversation:</h3>
+{% block page_content %}
+    <div class="column eleven wide">
+        <h1>Start a New Conversation</h1>
+        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,</p>
+    </div>
+
+    <div class="column eleven wide">
         <form method="POST" action="{% url 'messenger:conversation_start' %}">
             {% csrf_token %}
-            {{ form }}
-            <button type="submit">Submit</button>
+            <div class="ui form">
+                {% for field in form %}
+                    <div class="field{% if field.errors %} error{% endif %}">
+                        {{ field.label_tag }}
+                        {% render_field field cols="80" %}
+                        <p class="field-error-msg">{{ field.errors }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+            <br>
+            <button class="ui blue button large" type="submit"><i class="send icon"></i>Start Conversation</button>
         </form>
     </div>
 

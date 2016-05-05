@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'feedback.apps.FeedbackConfig',
     'messenger.apps.MessengerConfig',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE_CLASSES = [
