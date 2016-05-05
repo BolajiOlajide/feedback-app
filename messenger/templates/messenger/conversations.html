@@ -9,18 +9,21 @@
 
 {% block page_content %}
 
-    <div class="sixteen wide column option-bar">
-        <ul>
+    <div class="column sixteen wide grid divided">
+        <div class="row">
             {% for conversation in conversations %}
-                <li><a href="{% url 'messenger:conversation' pk=conversation.pk %}">
-                    <h4>{{ conversation.subject }}</h4>
+                <div class="column seven wide"><a href="{% url 'messenger:conversation' pk=conversation.pk %}">
+                    <h3>{{ conversation.subject }}</h3>
                     <p>{{ conversation.latest_message.content }}</p>
                     <span>{{ conversation.latest_message.date_created|naturaltime }}</span>
-                </a></li>
+                </a></div>
             {% empty %}
-               <p>No conversation yet. Click <a href="{% url 'messenger:conversation_start' %}"> here</a> to start one.</p>
+                <div class="column sixteen wide">
+                    <p class="empty-msg" >No conversation yet. Click <a href="{% url 'messenger:conversation_start' %}"> here</a> to start one.</p>
+                </div>
             {% endfor %}
-        </ul>
+            </div>
+        </div>
     </div>
 
 {% endblock %}

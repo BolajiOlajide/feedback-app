@@ -7,7 +7,7 @@
     <div class="ui menu navbar fixed">
         <div class="ui container">
 
-            <a href="#" class="header item">
+            <a href="{% url 'homepage' %}" class="header item">
                 <img class="ui logo" src="{% static "img/header-logo.png" %}">
             </a>
 
@@ -16,7 +16,7 @@
                 <div class="ui simple dropdown item right">
                     Account <i class="dropdown icon"></i>
                     <div class="menu">
-                        <a class="item" href="#">Sign Out</a>
+                        <a class="item" href="{% url 'signout' %}">Sign Out</a>
                     </div>
                 </div>
             </div>
@@ -28,10 +28,10 @@
         <div class="ui grid">
 
             {% block secondary_bar %}
-            <div class="sixteen wide column secondary-menu-bar">
+            <div class="column sixteen wide secondary-menu-bar">
                 <div class="ui secondary menu">
-                    <a class="active item">All Conservations</a>
-                    <a class="item">Started By Me</a>
+                    <a class="active item" href="{% url 'messenger:conversations' %}">All Conservations</a>
+                    <a class="item" href="{% url 'messenger:conversations' %}?init=1">Started By Me</a>
                     <a class="item" href="{% url 'messenger:conversation_start' %}"><i class="plus icon"></i> New Conversation</a>
                     <div class="right menu">
                         <div class="item">
@@ -54,7 +54,6 @@
 
         </div>
     </div>
-
     <!--
     <div class="ui container footer">
         <div class="ui grid">
@@ -64,5 +63,4 @@
         </div>
     </div>
     -->
-
 {% endblock %}
