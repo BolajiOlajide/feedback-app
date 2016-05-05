@@ -240,3 +240,11 @@ class ReceivedFeedbackListView(ListView):
 
     def get_queryset(self):
         return ReceivedFeedback.objects.filter(receiver=self.request.user)
+
+
+def custom_404(request):
+    return render(request, 'feedback/404.html')
+
+
+def custom_500(request):
+    return render(request, 'feedback/500.html')

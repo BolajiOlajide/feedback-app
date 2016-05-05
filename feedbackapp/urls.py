@@ -24,3 +24,6 @@ urlpatterns = [
     url(r'^messenger/', include('messenger.urls', namespace='messenger')),
 
 ]
+
+handler404 = 'feedback.views.custom_404'
+handler500 = 'feedback.views.custom_500'

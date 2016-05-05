@@ -5,6 +5,7 @@ from django.views.generic.base import View
 from django.db.models import Q
 from django.conf import settings
 from django.contrib import messages
+from django.http import Http404
 from django.shortcuts import (
     render,
     redirect,
@@ -167,6 +168,9 @@ class ConversationView(View, LoginRequiredMixin):
         """
         pk = kwargs.get('pk')
         conversation = get_object_or_404(Conversation, id=pk)
+        if request.user not in conversation.members.all():
+            raise Http404("Amebo! Mind your business.")
+
         form = PostMessageForm()
 
         context = {
