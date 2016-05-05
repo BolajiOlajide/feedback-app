@@ -1,16 +1,23 @@
-{% extends "base.html" %}
+{% extends "messenger/base.html" %}
 {% load static %}
+{% load widget_tweaks %}
 {% load humanize %}
 
 {% block title %}{{ block.super }} - Start New Conversations{% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/conversation.css' %}">
+{% endblock extra_css %}
+
 {% block page_content %}
 
-    <h1>Phantom Messenger</h1>
-    <div>
+
+    <div class="column eleven wide">
         <h3>{{ conversation.subject }}</h3>
+     <div class="ui divider"></div>
     </div>
-    <ul>
+
+    <ul class="column eleven wide">
         {% for message in conversation.messages.all %}
             <li>
                 <p>{{ message.content }}</p>
@@ -20,11 +27,16 @@
             <p>No messages in this conversation yet. Start by typing your message in the box below.</p>
         {% endfor %}
     </ul>
-    <div>
+    <div class="column eleven wide">
         <form method="POST" action="{% url 'messenger:conversation' pk=conversation.pk %}">
             {% csrf_token %}
-            {{ form }}
-            <button type="submit">Send</button>
+            <div class="ui form">
+                <div class="field">
+                    {% render_field form.content col="80" placeholder="Type your message here" %}
+                </div>
+            </div>
+            <br>
+            <button class="ui inverted blue button" type="submit"><i class="send icon"></i>Send</button>
         </form>
     </div>
 
