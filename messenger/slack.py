@@ -34,6 +34,32 @@ def get_slack_name(user):
     return slack_name
 
 
+def slack_name_exists(slack_name):
+    """
+    Helper function to check if slack name exists on the team.
+    """
+    members = get_slack_users()
+    exists = False
+
+    if slack_name.startswith('@'):
+        slack_name = slack_name[1:]
+    for member in members:
+        if member.get('name') == slack_name:
+            exists = True
+            break
+    return exists
+
+
+def validate_slack_name(slack_name):
+    if slack_name.startswith('#'):
+        return None
+    if not slack_name.startswith('@'):
+        slack_name = '@{}'.format(slack_name)
+    if not slack_name_exists(slack_name):
+        return None
+    return slack_name
+
+
 def get_slack_join_link(request, conversation, slack_name):
     """
     Returns a url a user can follow to join the specified
