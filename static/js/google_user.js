@@ -11,12 +11,10 @@ $.ajaxSetup({
 $.ajaxSetup({ cache: false });
 
 function onSignIn(googleUser) {
-    console.log("this is google user", googleUser)
     var profile = googleUser.getBasicProfile();
     var id_token = googleUser.getAuthResponse().id_token;
     var url = location.href.split('?');
     var next = url[1]? url[1] : 'next';
-    console.log(next);
 
     $.ajax({
             type: "GET",
@@ -54,12 +52,6 @@ function onSignIn(googleUser) {
             },
     });
 
-    console.log('id_token: ' + id_token);
-    console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-    console.log('Name: ' + profile.getName());
-    console.log('Image URL: ' + profile.getImageUrl());
-    console.log('Email: ' + profile.getEmail());
-
 }
 
 function onFailure(error) {
@@ -94,7 +86,6 @@ function signOutGoogleUser() {
 
                 success: function(response) {
                     if (response === "success") {
-                            console.log("signed out");
                             window.location.href = "http://www.google.com";
                             signOut();
 
